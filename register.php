@@ -5,7 +5,7 @@ if(isset($_POST['submit'])){
     $email = mysqli_real_escape_string($conn, $_POST['email']);
     $pass = md5($_POST['password']);
     $cpass = md5($_POST['cpassword']);
-    $user_type= $_POST['user_type'];
+   // $user_type= $_POST['user_type'];
 
     $select = " SELECT * FROM user_form WHERE email = '$email' && password = '$pass'";
     $result = mysqli_query($conn, $select);
@@ -18,7 +18,7 @@ if(isset($_POST['submit'])){
         if($pass != $cpass){
             $error[]= 'password not matched!';
         } else{
-            $insert = "INSERT INTO user_form (name, email, password, user_type) VALUES('$name','$email','$pass','$user_type') ";
+            $insert = "INSERT INTO user_form (name, email, password) VALUES('$name','$email','$pass') ";
             mysqli_query($conn, $insert);
             header('location:login.php');
         }
@@ -50,10 +50,10 @@ if(isset($_POST['submit'])){
             <input type="email" name="email" required placeholder="Enter your email">
             <input type="password" name="password" required placeholder="Enter your password">
             <input type="password" name="cpassword" required placeholder="Confirm your password">
-            <select name="user_type">
-                <option value="user">User</option>
+            <!--<select name="user_type">
+             <option value="user">User</option>
                 <option value="admin">Admin</option>
-            </select>
+            </select> -->
             <input type="submit" name="submit" value="register now" class="form-btn">
             <p>Already have an account? <a href="login.php">LogIn Now</a></p>
         </form>

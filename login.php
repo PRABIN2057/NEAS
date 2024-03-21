@@ -1,35 +1,31 @@
 <?php
-@include 'config.php';
+include 'config.php'; // 
 
 session_start();
 
 if(isset($_POST['submit'])){
-    $name = mysqli_real_escape_string($conn, $_POST['name']);
     $email = mysqli_real_escape_string($conn, $_POST['email']);
-    $pass = md5($_POST['password']);
-    $cpass = md5($_POST['cpassword']);
-    $user_type= $_POST['user_type'];
+    $password = md5($_POST['password']); // Hash the entered password
 
-    $select = " SELECT * FROM user_form WHERE email = '$email' && password = '$pass'";
+    $select = "SELECT * FROM user_form WHERE email = '$email'";
     $result = mysqli_query($conn, $select);
 
-    if(mysqli_num_rows($result)> 0){
-
-        $row = mysqli_fetch_array($result);
-        if($row['user_type'] == 'admin'){
-
-            $_SESSION['admin_name'] = $row['name'];
-            header('location: admin_page.php');
-
-        }elseif($row['user_type'] == 'user'){
-            
-            $_SESSION['user_name'] = $row['name'];
-            header('location: user_page.php');
+    if(mysqli_num_rows($result) > 0){
+        $row = mysqli_fetch_assoc($result);
+        // Verify the hashed password
+        if($row['password'] == $password){
+            // Authentication successful
+            $_SESSION['user_id'] = $row['id']; 
+            $_SESSION['user_email'] = $row['email']; 
+            header('location: user_page.php'); 
+            exit;
+        } else {
+            $error = 'Incorrect email or password!';
         }
-    } else{
-        $error[] = 'incorrect email or password!';
+    } else {
+        $error = 'User not found!';
     }
-};
+}
 ?>
 <!DOCTYPE html>
 <html lang="en">
@@ -42,17 +38,15 @@ if(isset($_POST['submit'])){
 <body>
     <div class="rcontainer">
         <form action="" method="post">
-            <h3>LogIn Now</h3>
+            <h3>Login Now</h3>
             <?php
             if(isset($error)){
-                foreach($error as $error){
-                    echo '<span class="error-msg' .$error.'</span>';
-                };
-            };
+                echo '<span class="error-msg">' . $error . '</span>';
+            }
             ?>
             <input type="email" name="email" required placeholder="Enter your email">
             <input type="password" name="password" required placeholder="Enter your password">
-            <input type="submit" name="submit" value="LogIn now" class="form-btn">
+            <input type="submit" name="submit" value="Login now" class="form-btn">
             <p>Don't have an account? <a href="register.php">Register Now</a></p>
         </form>
     </div>
